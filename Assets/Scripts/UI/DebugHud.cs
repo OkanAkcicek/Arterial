@@ -82,6 +82,18 @@ namespace FactoryCity.UI
                 }
             }
 
+            if (sim.Trucks != null && sim.Trucks.Count > 0)
+            {
+                GUILayout.Space(6);
+                GUILayout.Label($"Kamyonlar: {sim.Trucks.Count}");
+                for (int i = 0; i < sim.Trucks.Count; i++)
+                {
+                    var t = sim.Trucks[i];
+                    string cType = t.cargoType != null ? t.cargoType.displayName : "—";
+                    GUILayout.Label($"      #{i}  {t.state}   yük: {cType} {t.cargo}/{t.capacity}");
+                }
+            }
+
             if (!string.IsNullOrEmpty(_lastMsg))
             {
                 GUILayout.FlexibleSpace();

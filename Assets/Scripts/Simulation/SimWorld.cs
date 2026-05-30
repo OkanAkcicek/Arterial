@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using FactoryCity.Buildings;
 using FactoryCity.Core;
 using FactoryCity.Roads;
+using FactoryCity.Trucks;
 
 namespace FactoryCity.Simulation
 {
@@ -17,7 +18,7 @@ namespace FactoryCity.Simulation
 
         // --- Kanonik üyeler (CLAUDE.md §5) — ilgili paketlerde eklenecek ---
         public List<Building> Buildings = new();   // Paket 2 — yerleştirilmiş binalar
-        // public List<Truck> Trucks;           // Paket 4   (kamyon listesi sahibi: BURASI)
+        public List<Truck> Trucks = new();       // Paket 4 — kamyon listesi sahibi (§5)
         public RoadNetwork Roads;               // Paket 1 — yol grafı (saf C# graf verisi)
         // public Dispatcher Dispatcher;        // Paket 5
         // public EconomyManager Economy;       // Paket 6
@@ -36,7 +37,7 @@ namespace FactoryCity.Simulation
             // Traffic.Recompute(Trucks);                                   // 1) Paket 8
             foreach (var b in Buildings) b.Tick(TickSystem.TickDelta);      // 2) üretim (Paket 3)
             // Dispatcher.Tick();                                           // 3) Paket 5
-            // foreach (var t in Trucks) t.Tick(TickSystem.TickDelta);      // 4) Paket 4/5
+            foreach (var t in Trucks) t.Tick(TickSystem.TickDelta);         // 4) kamyon hareketi (Paket 4)
         }
     }
 }
