@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using FactoryCity.Buildings;
+using FactoryCity.Core;
 using FactoryCity.Roads;
 
 namespace FactoryCity.Simulation
@@ -33,7 +34,7 @@ namespace FactoryCity.Simulation
 
             // --- Kanonik tick sırası (CLAUDE.md §6) — paketler ilerledikçe açılacak ---
             // Traffic.Recompute(Trucks);                                   // 1) Paket 8
-            // foreach (var b in Buildings) b.Tick(TickSystem.TickDelta);   // 2) Paket 3
+            foreach (var b in Buildings) b.Tick(TickSystem.TickDelta);      // 2) üretim (Paket 3)
             // Dispatcher.Tick();                                           // 3) Paket 5
             // foreach (var t in Trucks) t.Tick(TickSystem.TickDelta);      // 4) Paket 4/5
         }

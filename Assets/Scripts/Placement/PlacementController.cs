@@ -201,13 +201,8 @@ namespace FactoryCity.Placement
                 }
             }
 
-            // 2) Building örneği (saf C# veri) — input/output buffer'lar Paket 3'te.
-            var building = new Building
-            {
-                def = _selectedBuilding,
-                origin = origin,
-                occupiedCells = cells
-            };
+            // 2) Building örneği (saf C# veri). Ctor output/input buffer'ları da kurar.
+            var building = new Building(_selectedBuilding, origin, cells);
 
             // 3) Doluluk: tüm footprint hücrelerinin sahibi bu bina.
             foreach (var c in cells) grid.SetOccupied(c, building);

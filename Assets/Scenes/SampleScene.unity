@@ -506,6 +506,7 @@ GameObject:
   - component: {fileID: 923829503}
   - component: {fileID: 923829502}
   - component: {fileID: 923829505}
+  - component: {fileID: 923829506}
   m_Layer: 0
   m_Name: System
   m_TagString: Untagged
@@ -574,6 +575,19 @@ MonoBehaviour:
   - {fileID: 11400000, guid: cef223c22da39f04aa3eea0c9f7e255f, type: 2}
   - {fileID: 11400000, guid: 0cf91ec442f6c8c4c998c6fe4521a65d, type: 2}
   buildingParent: {fileID: 176178720}
+--- !u!114 &923829506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 923829501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77906e1805386a04bbd107a174a04c4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FactoryCity.UI.DebugHud
+  injectAmount: 100
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
