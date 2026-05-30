@@ -31,8 +31,9 @@ namespace FactoryCity.Trucks
         public float loadAccum;              // kısmi yükleme/boşaltma biriktirici
         public const float LoadRate = 5f;    // birim/sn (CLAUDE.md §4)
 
-        // public TruckRoute route;                    // Paket 5
-        // public Vector3 prevWorldPos, currWorldPos;  // Paket 9 (interpolasyon)
+        public TruckRoute route;                    // Paket 5 — atandığı rota (geri referans)
+        public Vector3 prevWorldPos, currWorldPos;  // Paket 9 — interpolasyon (View OKUR)
+        public bool PositionReady { get; private set; } // ilk mantıksal konum hesaplandı mı
 
         // Kamyonun park ettiği / mevcut edge'in GİRİŞ node'u. Yön takibi için şart:
         // path edge'leri yönsüz olduğundan ilerleme yönünü bu belirler.
@@ -83,6 +84,16 @@ namespace FactoryCity.Trucks
                     if (path == null) GoTo(source, roads);
                     if (MoveAlongPath(dt)) state = TruckState.Idle;
                     break;
+            }
+
+            // Tick sonu: görsel interpolasyon için mantıksal dünya konumunu sakla.
+            // View bu iki alanı OKUR (İlke 1); ilk tick'te ikisi de aynı (origin flaşı olmasın).
+            var grid = ServiceRegistry.Grid;
+            if (grid != null)
+            {
+                Vector3 p = WorldPosition(grid);
+                if (!PositionReady) { prevWorldPos = currWorldPos = p; PositionReady = true; }
+                else { prevWorldPos = currWorldPos; currWorldPos = p; }
             }
         }
 
@@ -166,7 +177,9 @@ namespace FactoryCity.Trucks
 
             RoadEdge e = path[edgeIndex];
             float len = Mathf.Max(e.length, 0.01f);
-            edgeProgress += (def.speed * dt) / len;  // * trafik çarpanı (Paket 8)
+            var traffic = ServiceRegistry.Sim?.Traffic;          // §7: trafik çarpanı buradan
+            float mult = traffic != null ? traffic.SpeedMultiplier(e) : 1f;
+            edgeProgress += (def.speed * dt * mult) / len;       // trafik çarpanı (Paket 8)
 
             if (edgeProgress >= 1f)
             {

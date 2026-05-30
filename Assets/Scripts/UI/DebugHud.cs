@@ -61,6 +61,7 @@ namespace FactoryCity.UI
             GUILayout.BeginArea(rect, GUI.skin.box);
 
             GUILayout.Label($"FactoryCity — Tick {sim.TickCount}");
+            GUILayout.Label($"Para: {(ServiceRegistry.Economy != null ? ServiceRegistry.Economy.money : 0)}");
             GUILayout.Label($"Bina sayısı: {sim.Buildings.Count}    [I] = ilk fabrikaya girdi enjekte");
             GUILayout.Space(6);
 

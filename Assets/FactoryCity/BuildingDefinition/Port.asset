@@ -21,5 +21,5 @@ MonoBehaviour:
   itemsPerMinute: 0
   bufferCapacity: 50
   recipe: []
-  buildCost: 0
-  unitPrice: 0
+  buildCost: 500
+  unitPrice: 10

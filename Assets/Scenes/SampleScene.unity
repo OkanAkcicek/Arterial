@@ -508,6 +508,9 @@ GameObject:
   - component: {fileID: 923829505}
   - component: {fileID: 923829506}
   - component: {fileID: 923829507}
+  - component: {fileID: 923829508}
+  - component: {fileID: 923829510}
+  - component: {fileID: 923829511}
   m_Layer: 0
   m_Name: System
   m_TagString: Untagged
@@ -529,6 +532,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FactoryCity.Core.GameController
   tickSystem: {fileID: 923829503}
   cellSize: 1
+  startingMoney: 10000
+  regionSize: 10
+  regionGridX: 2
+  regionGridZ: 2
+  regionUnlockCost: 500
 --- !u!114 &923829503
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -575,7 +583,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d7777b077fa3e624dadb704e50ec9f5b, type: 2}
   - {fileID: 11400000, guid: cef223c22da39f04aa3eea0c9f7e255f, type: 2}
   - {fileID: 11400000, guid: 0cf91ec442f6c8c4c998c6fe4521a65d, type: 2}
+  - {fileID: 11400000, guid: fbf8cc5cb98cafd47829763fa3b9d755, type: 2}
   buildingParent: {fileID: 176178720}
+  colorRoadsByTraffic: 1
 --- !u!114 &923829506
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -602,6 +612,47 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FactoryCity.View.TruckSpawner
   truckDef: {fileID: 11400000, guid: 5bf015b5a7b01484d83113647fe83817, type: 2}
+--- !u!114 &923829508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 923829501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f660ce6a92f81c4d9b5c681a0cf9c0b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FactoryCity.UI.RouteUI
+  cam: {fileID: 0}
+  truckDef: {fileID: 11400000, guid: 5bf015b5a7b01484d83113647fe83817, type: 2}
+--- !u!114 &923829510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 923829501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad9ee67ecc456b949814c688bd5af81e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FactoryCity.View.RegionView
+  lockedOverlayMaterial: {fileID: 2100000, guid: 1b827c8e9dc05a24f9a4761c1e4b702b, type: 2}
+  overlayY: 0.05
+--- !u!114 &923829511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 923829501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2cd8e467714a5b468d83eab1f32d3d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FactoryCity.View.ViewSync
+  tickSystem: {fileID: 923829503}
   truckParent: {fileID: 1422041538}
 --- !u!1 &1422041537
 GameObject:

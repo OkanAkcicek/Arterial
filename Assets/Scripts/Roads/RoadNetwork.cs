@@ -13,6 +13,9 @@ namespace FactoryCity.Roads
         private readonly Dictionary<GridCoord, RoadNode> _nodes = new();
         private readonly HashSet<RoadEdge> _edges = new();
 
+        // Eşit uzunluktaki yollar arasında tie-break için (paralel yollar dağılsın — Paket 8).
+        private readonly System.Random _rng = new();
+
         /// <summary>Debug/HUD için düğüm sayısı.</summary>
         public int NodeCount => _nodes.Count;
 
@@ -99,8 +102,14 @@ namespace FactoryCity.Roads
                 var cur = queue.Dequeue();
                 if (cur == to) { found = true; break; }
 
-                foreach (var e in cur.edges)
+                // Komşuları rastgele başlangıç ofsetiyle gez: BFS yine EN KISA yolu bulur,
+                // ama eşit uzunluktaki yollar arasında seçim değişir → kamyonlar paralel
+                // yollara dağılır (trafik rahatlar). Determinizm yerine yük dengesi tercih.
+                int cnt = cur.edges.Count;
+                int off = cnt > 1 ? _rng.Next(cnt) : 0;
+                for (int k = 0; k < cnt; k++)
                 {
+                    var e = cur.edges[(off + k) % cnt];
                     var nxt = (e.a == cur) ? e.b : e.a;
                     if (!visited.Add(nxt)) continue; // zaten görüldü
 

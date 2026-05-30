@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using FactoryCity.Core;
 using FactoryCity.Data;
 using FactoryCity.Grid;
 
@@ -42,7 +43,11 @@ namespace FactoryCity.Buildings
         /// </summary>
         public void Tick(float dt)
         {
-            if (def.kind == BuildingKind.Port) return;     // Port satışı Paket 6'da
+            if (def.kind == BuildingKind.Port)
+            {
+                SellEverything();                          // input'taki her şeyi sat (Paket 6)
+                return;
+            }
             if (output.count >= output.capacity) return;   // tampon dolu → dur
 
             bool needsInput = def.recipe != null && def.recipe.Count > 0;
@@ -72,6 +77,23 @@ namespace FactoryCity.Buildings
             }
 
             _accum -= produced; // yalnızca gerçekten ürettiğin kadar düş
+        }
+
+        // Port: input buffer'daki HER ŞEYİ sabit fiyattan (def.unitPrice) satar ve temizler.
+        // EconomyManager erişimi ServiceRegistry üzerinden (CLAUDE.md §7). Fiyat, satılan
+        // item tipinden bağımsız tek unitPrice (slice kararı).
+        private void SellEverything()
+        {
+            var economy = ServiceRegistry.Economy;
+            if (economy != null)
+            {
+                foreach (var (_, qty) in input.GetAllStocks())
+                {
+                    if (qty <= 0) continue;
+                    economy.Add(qty * def.unitPrice);
+                }
+            }
+            input.ClearAll();
         }
     }
 }

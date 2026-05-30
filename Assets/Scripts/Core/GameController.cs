@@ -17,6 +17,16 @@ namespace FactoryCity.Core
         [Tooltip("Grid hücre boyutu (dünya birimi). Kenney modül boyutuna göre ayarla.")]
         [SerializeField] private float cellSize = 4f;
 
+        [Header("Paket 7 — Ekonomi & Bölge")]
+        [Tooltip("Oyuncunun başlangıç parası (maliyetler artık devrede; bootstrap için gerekli).")]
+        [SerializeField] private long startingMoney = 2000;
+        [Tooltip("Bir bölgenin kenar uzunluğu (hücre).")]
+        [SerializeField] private int regionSize = 10;
+        [SerializeField] private int regionGridX = 2;
+        [SerializeField] private int regionGridZ = 2;
+        [Tooltip("Bölge 0 hariç açma maliyeti.")]
+        [SerializeField] private long regionUnlockCost = 500;
+
         private SimWorld _sim;
 
         private void Awake()
@@ -28,6 +38,11 @@ namespace FactoryCity.Core
             // (Awake -> OnEnable -> ilk Update sırası garanti eder).
             _sim = new SimWorld { Roads = new RoadNetwork() };
             ServiceRegistry.Sim = _sim;
+            ServiceRegistry.Economy = _sim.Economy; // Paket 6 — Port satışları buraya yazar
+
+            // Paket 7: başlangıç parası + bölgeler (Bölge 0 açık, diğerleri kilitli).
+            _sim.Economy.Add(startingMoney);
+            _sim.Regions.GenerateGrid(regionSize, regionGridX, regionGridZ, regionUnlockCost);
         }
 
         private void OnEnable()

@@ -10,20 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1b53f3691563ea14db0050fc886fcc15, type: 3}
-  m_Name: Factory
+  m_Name: Coal Mine
   m_EditorClassIdentifier: Assembly-CSharp::FactoryCity.Data.BuildingDefinition
-  displayName: Factory
-  kind: 1
-  prefab: {fileID: 919132149155446097, guid: 36ce642aa3dca8c408b3fc90f477c293, type: 3}
+  displayName: Coal Mine
+  kind: 0
+  prefab: {fileID: 919132149155446097, guid: 19028391e73f6dd458e883bfe9aecde9, type: 3}
   footprint: {x: 2, y: 2}
   entranceOffset: {x: 0, y: 0}
-  outputType: {fileID: 11400000, guid: 593678dc33d7bd24d9d671ae2775101e, type: 2}
-  itemsPerMinute: 30
+  outputType: {fileID: 11400000, guid: 2104b9c5947174a4f864fa366927f23f, type: 2}
+  itemsPerMinute: 60
   bufferCapacity: 50
-  recipe:
-  - type: {fileID: 11400000, guid: 3cb632eb81df0444a9b8b8282e6a6293, type: 2}
-    amountPerOutput: 2
-  - type: {fileID: 11400000, guid: 2104b9c5947174a4f864fa366927f23f, type: 2}
-    amountPerOutput: 1
-  buildCost: 400
+  recipe: []
+  buildCost: 300
   unitPrice: 0

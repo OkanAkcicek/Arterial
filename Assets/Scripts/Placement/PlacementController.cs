@@ -36,8 +36,15 @@ namespace FactoryCity.Placement
         [Tooltip("Opsiyonel — konan binalar bu Transform altına toplanır.")]
         [SerializeField] private Transform buildingParent;
 
+        [Header("Trafik görseli (Paket 8)")]
+        [Tooltip("Tıkanık yolları sarı→kırmızı boyar (occupancy). Sim'i etkilemez, yalnız okur.")]
+        [SerializeField] private bool colorRoadsByTraffic = true;
+
         private PlaceMode _mode = PlaceMode.Road;
         private BuildingDefinition _selectedBuilding;
+
+        /// <summary>RouteUI rota-seçim modunda yerleştirme tıklarını bastırır (tık çakışması).</summary>
+        public static bool InputSuppressed;
 
         // Konan yolların GÖRSEL kayıtları (graf DEĞİL). Hücre -> prefab örneği.
         private readonly Dictionary<GridCoord, GameObject> _roadViews = new();
@@ -58,6 +65,10 @@ namespace FactoryCity.Placement
         {
             // Servisler hazır değilse (GameController henüz kurmadıysa) bekle.
             if (ServiceRegistry.Grid == null || ServiceRegistry.Sim == null) return;
+
+            if (colorRoadsByTraffic) ColorRoadsByTraffic(); // trafik görseli (rota modunda da çalışır)
+
+            if (InputSuppressed) return; // RouteUI rota modundayken yerleştirme kapalı
 
             HandleModeKeys();
 
@@ -115,6 +126,8 @@ namespace FactoryCity.Placement
             if (!RaycastToCell(out var cell)) return;
 
             var grid = ServiceRegistry.Grid;
+            var regions = ServiceRegistry.Sim.Regions;
+            if (regions != null && !regions.IsCellBuildable(cell)) return; // kilitli/tanımsız bölge → yol yok
             if (grid.IsOccupied(cell)) return; // üst üste koyma yok
 
             var roads = ServiceRegistry.Sim.Roads;
@@ -182,6 +195,7 @@ namespace FactoryCity.Placement
             if (!RaycastToCell(out var origin)) return;
 
             var grid = ServiceRegistry.Grid;
+            var regions = ServiceRegistry.Sim.Regions;
             int w = Mathf.Max(1, _selectedBuilding.footprint.x);
             int d = Mathf.Max(1, _selectedBuilding.footprint.y);
 
@@ -192,6 +206,11 @@ namespace FactoryCity.Placement
                 for (int dz = 0; dz < d; dz++)
                 {
                     var c = new GridCoord(origin.x + dx, origin.z + dz);
+                    if (regions != null && !regions.IsCellBuildable(c))
+                    {
+                        Debug.Log($"Yerleştirme RED: {_selectedBuilding.displayName} @ {origin} — {c} kilitli/tanımsız bölge.");
+                        return;
+                    }
                     if (grid.IsOccupied(c))
                     {
                         Debug.Log($"Yerleştirme RED: {_selectedBuilding.displayName} @ {origin} — {c} dolu.");
@@ -201,7 +220,15 @@ namespace FactoryCity.Placement
                 }
             }
 
-            // 2) Building örneği (saf C# veri). Ctor output/input buffer'ları da kurar.
+            // 2) Maliyet: footprint uygun → parayı düş. Yetmezse hiç koyma.
+            var economy = ServiceRegistry.Economy;
+            if (economy != null && !economy.TrySpend(_selectedBuilding.buildCost))
+            {
+                Debug.Log($"Yerleştirme RED: {_selectedBuilding.displayName} — yetersiz para (gerekli {_selectedBuilding.buildCost}).");
+                return;
+            }
+
+            // 3) Building örneği (saf C# veri). Ctor output/input buffer'ları da kurar.
             var building = new Building(_selectedBuilding, origin, cells);
 
             // 3) Doluluk: tüm footprint hücrelerinin sahibi bu bina.
@@ -235,6 +262,49 @@ namespace FactoryCity.Placement
                 return true;
             }
             return false;
+        }
+
+        // ---- Trafik görseli (occupancy → renk; sim'i yalnız OKUR, İlke 1) ----
+
+        private MaterialPropertyBlock _mpb;
+        private int _colorFrame;
+        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+        private static readonly int ColorId = Shader.PropertyToID("_Color");
+
+        private void ColorRoadsByTraffic()
+        {
+            if ((_colorFrame++ % 3) != 0) return; // ~20 Hz yeterli
+
+            var roads = ServiceRegistry.Sim.Roads;
+            if (roads == null) return;
+            _mpb ??= new MaterialPropertyBlock();
+
+            foreach (var kv in _roadViews)
+            {
+                if (kv.Value == null) continue;
+                var rend = kv.Value.GetComponentInChildren<Renderer>();
+                if (rend == null) continue;
+
+                // Bu yol hücresinin tıkanıklığı = komşu edge'lerin en yükseği.
+                var node = roads.GetNodeAt(kv.Key);
+                int occ = 0;
+                if (node != null)
+                    for (int i = 0; i < node.edges.Count; i++)
+                        if (node.edges[i].occupancy > occ) occ = node.edges[i].occupancy;
+
+                if (occ <= 0)
+                {
+                    rend.SetPropertyBlock(null); // boş yol → doğal görünüm
+                    continue;
+                }
+
+                float t = occ >= 4 ? 1f : occ / 4f;     // hafif yük sarı, ağır yük kırmızı
+                Color c = Color.Lerp(Color.yellow, Color.red, t);
+                rend.GetPropertyBlock(_mpb);
+                _mpb.SetColor(BaseColorId, c);
+                _mpb.SetColor(ColorId, c);
+                rend.SetPropertyBlock(_mpb);
+            }
         }
 
         // ---- Girdi soyutlaması (yeni Input System birincil; eski de derlenir) ----
@@ -320,6 +390,9 @@ namespace FactoryCity.Placement
                 if (Keyboard.current.digit1Key.wasPressedThisFrame) return 0;
                 if (Keyboard.current.digit2Key.wasPressedThisFrame) return 1;
                 if (Keyboard.current.digit3Key.wasPressedThisFrame) return 2;
+                if (Keyboard.current.digit4Key.wasPressedThisFrame) return 3;
+                if (Keyboard.current.digit5Key.wasPressedThisFrame) return 4;
+                if (Keyboard.current.digit6Key.wasPressedThisFrame) return 5;
                 return -1;
             }
 #endif
@@ -327,6 +400,9 @@ namespace FactoryCity.Placement
             if (Input.GetKeyDown(KeyCode.Alpha1)) return 0;
             if (Input.GetKeyDown(KeyCode.Alpha2)) return 1;
             if (Input.GetKeyDown(KeyCode.Alpha3)) return 2;
+            if (Input.GetKeyDown(KeyCode.Alpha4)) return 3;
+            if (Input.GetKeyDown(KeyCode.Alpha5)) return 4;
+            if (Input.GetKeyDown(KeyCode.Alpha6)) return 5;
             return -1;
 #else
             return -1;

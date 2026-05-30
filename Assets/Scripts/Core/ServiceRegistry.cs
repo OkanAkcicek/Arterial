@@ -1,3 +1,4 @@
+using FactoryCity.Economy;
 using FactoryCity.Grid;
 using FactoryCity.Simulation;
 
@@ -14,6 +15,6 @@ namespace FactoryCity.Core
 
         // --- Kanonik üyeler (CLAUDE.md §5) — ilgili paketlerde eklenecek ---
         public static GridManager Grid { get; set; }          // Paket 1
-        // public static EconomyManager Economy { get; set; }  // Paket 6
+        public static EconomyManager Economy { get; set; }     // Paket 6
     }
 }

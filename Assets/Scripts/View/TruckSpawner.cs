@@ -18,8 +18,6 @@ namespace FactoryCity.View
     public class TruckSpawner : MonoBehaviour
     {
         [SerializeField] private TruckDefinition truckDef;
-        [Tooltip("Opsiyonel — konan kamyonlar bu Transform altına toplanır.")]
-        [SerializeField] private Transform truckParent;
 
         private void Update()
         {
@@ -42,20 +40,12 @@ namespace FactoryCity.View
                 return;
             }
 
-            // Sim kamyonu (saf C#) — kanonik liste SimWorld.Trucks.
+            // Sim kamyonu (saf C#) — kanonik liste SimWorld.Trucks. Görselini artık
+            // ViewSync üretir (havuzdan, def.prefab'tan); burada view oluşturmuyoruz.
             var truck = new Truck(truckDef) { source = source, dest = dest };
             sim.Trucks.Add(truck);
 
-            // Görsel: prefab + TruckView.
-            var grid = ServiceRegistry.Grid;
-            Vector3 pos = grid != null ? truck.WorldPosition(grid) : Vector3.zero;
-            GameObject go = Instantiate(truckDef.prefab, pos, Quaternion.identity, truckParent);
-
-            var view = go.GetComponent<TruckView>();
-            if (view == null) view = go.AddComponent<TruckView>();
-            view.truck = truck;
-
-            Debug.Log($"Kamyon spawn: {source.def.displayName} → {dest.def.displayName} (kapasite {truck.capacity}).");
+            Debug.Log($"Kamyon spawn (DEBUG): {source.def.displayName} → {dest.def.displayName} (kapasite {truck.capacity}).");
         }
 
         private static Building FindFirst(SimWorld sim, BuildingKind kind)

@@ -15,4 +15,4 @@ MonoBehaviour:
   prefab: {fileID: 919132149155446097, guid: f64055773ea244d44b5b1d23a6762182, type: 3}
   capacity: 20
   speed: 8
-  buyCost: 0
+  buyCost: 100
