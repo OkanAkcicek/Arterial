@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using FactoryCity.Buildings;
 using FactoryCity.Roads;
 
 namespace FactoryCity.Simulation
@@ -13,7 +15,7 @@ namespace FactoryCity.Simulation
         public long TickCount;
 
         // --- Kanonik üyeler (CLAUDE.md §5) — ilgili paketlerde eklenecek ---
-        // public List<Building> Buildings;     // Paket 2/3
+        public List<Building> Buildings = new();   // Paket 2 — yerleştirilmiş binalar
         // public List<Truck> Trucks;           // Paket 4   (kamyon listesi sahibi: BURASI)
         public RoadNetwork Roads;               // Paket 1 — yol grafı (saf C# graf verisi)
         // public Dispatcher Dispatcher;        // Paket 5
